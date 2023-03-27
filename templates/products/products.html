@@ -1,0 +1,36 @@
+{% extends 'layouts/index.html' %}
+{% load static %}
+
+{% block content %}
+       <style type="text/css">
+        .products{
+            display:flex;
+            justify-content: space-between;
+            width: 80%;
+            margin-left: 10%;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .image > img {
+            width: 100%;
+        }
+        </style>
+    <div class="products">
+        {% for product in products %}
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                     <div> class="image">
+                         {% if post.image %}
+                             <img src="/media/{{ post.image }}/" alt="">
+                         {% else %}
+                             <img src="{% static 'z.png' %}">
+                         {% endif %}
+                    </div>
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Rate: {{ product.rate }}</h6>
+                    <a href="/products/{{ product.id }}" class="card-link">More</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

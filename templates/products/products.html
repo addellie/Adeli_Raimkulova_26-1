@@ -23,12 +23,12 @@
                          {% if post.image %}
                              <img src="/media/{{ post.image }}/" alt="">
                          {% else %}
-                             <img src="{% static 'z.png' %}">
+                             <img src="{% static 'casio-logo-vector-1.svg' %}">
                          {% endif %}
                     </div>
                     <h5 class="card-title">{{ product.name }}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Rate: {{ product.rate }}</h6>
-                    <a href="/products/{{ product.id }}" class="card-link">More</a>
+                    <a href="/products/{{ product.id }}/" class="card-link">More</a>
                 </div>
             </div>
         {% endfor %}

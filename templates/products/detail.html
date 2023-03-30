@@ -11,7 +11,7 @@
             {% if post.image %}
                 <img src="/media/{{ post.image }}/" alt="">
             {% else %}
-                <img src="{% static 'z.png' %}">
+                <img src="{% static 'casio-logo-vector-1.svg'%}">
             {% endif %}
         </div>
         <div class="info">
@@ -24,6 +24,14 @@
                 <p>{{ product.created }}</p>
                 <p>{{ product.updated }}</p>
             </div>
+        </div>
+
+        <div class="create_comment">
+            <form action="/products/{{ product.id }}/" method="post">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Add comment">
+            </form>
         </div>
 
         <div class="comments">

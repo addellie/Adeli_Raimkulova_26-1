@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from posts.views import MainPageCBV, ProductsCBV, ProductDetailCBV, \
+from posts.views import MainPageCBV, ProductsCBV, product_detail_view, \
     ProductCreateCBV
 from Store import settings
 from django.conf.urls.static import static
@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', MainPageCBV.as_view()),
     path('products/', ProductsCBV.as_view()),
-    path('products/<int:id>/', ProductDetailCBV),
+    path('products/<int:id>/', product_detail_view),
     path('products/create/', ProductCreateCBV.as_view()),
 
     path('users/register/', register_view),

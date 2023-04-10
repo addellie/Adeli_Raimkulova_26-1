@@ -1,35 +1,24 @@
 from django.shortcuts import HttpResponse, render, redirect
-from datetime import date
 from posts.models import Product, Comment
 from posts.forms import PostCreateForm, CommentCreateForm
 from posts.constants import PAGINATION_LIMIT
+from django.views.generic import ListView, CreateView, DetailView
 
 # Create your views here.
 
 
-def hello_view(request):
-    if request.method == 'GET':
-        return HttpResponse("Hello! Its my project")
+class MainPageCBV(ListView):
+    model = Product
+    template_name = 'layouts/index.html'
 
 
-def now_date_view(request):
-    if request.method == 'GET':
-        return HttpResponse(date.today())
+class ProductsCBV(ListView):
+    model = Product
+    template_name = 'products/products.html'
+    context_object_name = 'products'
 
-
-def goodbye_view(request):
-    if request.method == 'GET':
-        return HttpResponse('Goodbye user!')
-
-
-def main_view(request):
-    if request.method == 'GET':
-        return render(request, 'layouts/index.html')
-
-
-def products_view(request):
-    if request.method == 'GET':
-        products = Product.objects.all().order_by('rate', 'price')
+    def get(self, request, **kwargs):
+        products = self.get_queryset().order_by('rate', 'price')
         search = request.GET.get('search')
         page = int(request.GET.get('page', 1))
 
@@ -46,14 +35,13 @@ def products_view(request):
         """posts splice"""
         products = products[PAGINATION_LIMIT * (page-1):PAGINATION_LIMIT * page]
 
-
         context = {
             'products': products,
             'users': request.user,
             'page': range(1, max_page+1)
         }
 
-        return render(request, 'products/products.html', context=context)
+        return render(request, self.template_name, context=context)
 
 
 def product_detail_view(request, id):
@@ -87,18 +75,24 @@ def product_detail_view(request, id):
         return render(request, 'products/detail.html', context=context)
 
 
-def product_create_view(request):
-    if request.method == 'GET':
-        context = {
-            'form': PostCreateForm
-        }
-        return render(request, 'products/create.html', context=context)
+class ProductCreateCBV(ListView, CreateView):
+    model = Product
+    template_name = 'products/create.html'
+    form_class = PostCreateForm
 
-    if request.method == 'POST':
-        form = PostCreateForm(request.POST, request.FILES)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {
+            'form': kwargs['form'] if kwargs.get('form') else self.form_class
+        }
+
+    def get(self, request, **kwargs):
+        return render(request, self.template_name, context=self.get_context_data())
+
+    def product(self, request, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
 
         if form.is_valid():
-            Product.objects.create(
+            self.model.objects.create(
                 description=form.cleaned_data.get('description'),
                 name=form.cleaned_data.get('title'),
                 rate=form.cleaned_data.get('rate'),
@@ -107,6 +101,4 @@ def product_create_view(request):
             )
             return redirect('/products/')
 
-        return render(request, 'products/create.html', context={
-            'form': form
-        })
+        return render(request, self.template_name, context=self.get_context_data(form=form))
